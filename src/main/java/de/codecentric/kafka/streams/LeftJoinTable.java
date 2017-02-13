@@ -21,14 +21,7 @@ public class LeftJoinTable {
 
             KTable<Long, AdViewEvent> viewStream = builder.table(Serdes.Long(), AdSerdes.AD_VIEW_SERDE, viewTopic, "Views");
             KTable<Long, AdClickEvent> clickStream = builder.table(Serdes.Long(), AdSerdes.AD_CLICK_SERDE, clickTopic, "Clicks");
-            KTable<Long, AdClickAndViewEvent> leftJoin = viewStream.leftJoin(clickStream, (view, click) -> {
-                AdClickAndViewEvent adClickAndViewEvent = new AdClickAndViewEvent();
-                adClickAndViewEvent.setClickEvent(click);
-                adClickAndViewEvent.setViewEvent(view);
-                return adClickAndViewEvent;
-
-
-            });
+            KTable<Long, AdClickAndViewEvent> leftJoin = viewStream.leftJoin(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click));
             leftJoin.print();
 
 

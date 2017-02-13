@@ -8,6 +8,12 @@ public class AdClickAndViewEvent {
     private AdViewEvent viewEvent;
     private AdClickEvent clickEvent;
 
+    public AdClickAndViewEvent(AdViewEvent viewEvent, AdClickEvent clickEvent) {
+        this.viewEvent = viewEvent;
+        this.clickEvent = clickEvent;
+    }
+
+    public AdClickAndViewEvent(){}
 
     public AdViewEvent getViewEvent() {
         return viewEvent;

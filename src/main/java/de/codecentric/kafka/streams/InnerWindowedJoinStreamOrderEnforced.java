@@ -13,16 +13,18 @@ import java.util.UUID;
 /**
  * Created by ftr on 03/02/2017.
  */
-public class LeftWindowedJoinStream {
+public class InnerWindowedJoinStreamOrderEnforced {
 
     public static void main(String[] args) {
-        new StreamRuntime("leftJoin5000ms" + UUID.randomUUID(), 0, 0).run((viewTopic, clickTopic, builder) -> {
+
+
+        new StreamRuntime("innerWindowedJoin5000ms" + UUID.randomUUID(), 0, 0).run((viewTopic, clickTopic, builder) -> {
 
             KStream<Long, AdViewEvent> viewStream = builder.stream(Serdes.Long(), AdSerdes.AD_VIEW_SERDE, viewTopic);
             KStream<Long, AdClickEvent> clickStream = builder.stream(Serdes.Long(), AdSerdes.AD_CLICK_SERDE, clickTopic);
-            KStream<Long, AdClickAndViewEvent> leftJoin = viewStream.leftJoin(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click),
-                    JoinWindows.of(5000), Serdes.Long(), AdSerdes.AD_VIEW_SERDE, AdSerdes.AD_CLICK_SERDE);
-            leftJoin.print();
+            KStream<Long, AdClickAndViewEvent> innerJoin = viewStream.join(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click),
+                    JoinWindows.of(5000).before(0), Serdes.Long(), AdSerdes.AD_VIEW_SERDE, AdSerdes.AD_CLICK_SERDE);
+            innerJoin.print();
 
 
         });

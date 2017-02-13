@@ -20,14 +20,8 @@ public class OuterWindowedJoinStream {
 
             KStream<Long, AdViewEvent> viewStream = builder.stream(Serdes.Long(), AdSerdes.AD_VIEW_SERDE, viewTopic);
             KStream<Long, AdClickEvent> clickStream = builder.stream(Serdes.Long(), AdSerdes.AD_CLICK_SERDE, clickTopic);
-            KStream<Long, AdClickAndViewEvent> outerJoin = viewStream.outerJoin(clickStream, (view, click) -> {
-                AdClickAndViewEvent adClickAndViewEvent = new AdClickAndViewEvent();
-                adClickAndViewEvent.setClickEvent(click);
-                adClickAndViewEvent.setViewEvent(view);
-                return adClickAndViewEvent;
-
-
-            }, JoinWindows.of(5000), Serdes.Long(), AdSerdes.AD_VIEW_SERDE, AdSerdes.AD_CLICK_SERDE);
+            KStream<Long, AdClickAndViewEvent> outerJoin = viewStream.outerJoin(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click),
+                    JoinWindows.of(5000), Serdes.Long(), AdSerdes.AD_VIEW_SERDE, AdSerdes.AD_CLICK_SERDE);
             outerJoin.print();
 
 

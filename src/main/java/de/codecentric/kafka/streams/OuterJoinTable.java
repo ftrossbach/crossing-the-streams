@@ -21,14 +21,7 @@ public class OuterJoinTable {
 
             KTable<Long, AdViewEvent> viewStream = builder.table(Serdes.Long(), AdSerdes.AD_VIEW_SERDE, viewTopic, "Views");
             KTable<Long, AdClickEvent> clickStream = builder.table(Serdes.Long(), AdSerdes.AD_CLICK_SERDE, clickTopic, "Clicks");
-            KTable<Long, AdClickAndViewEvent> outerJoin = viewStream.outerJoin(clickStream, (view, click) -> {
-                AdClickAndViewEvent adClickAndViewEvent = new AdClickAndViewEvent();
-                adClickAndViewEvent.setClickEvent(click);
-                adClickAndViewEvent.setViewEvent(view);
-                return adClickAndViewEvent;
-
-
-            });
+            KTable<Long, AdClickAndViewEvent> outerJoin = viewStream.outerJoin(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click));
             outerJoin.print();
 
 

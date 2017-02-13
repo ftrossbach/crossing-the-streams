@@ -23,14 +23,7 @@ public class InnerJoinTable {
 
             KTable<Long, AdViewEvent> viewStream = builder.table(Serdes.Long(), AdSerdes.AD_VIEW_SERDE, viewTopic, "Views");
             KTable<Long, AdClickEvent> clickStream = builder.table(Serdes.Long(), AdSerdes.AD_CLICK_SERDE, clickTopic, "Clicks");
-            KTable<Long, AdClickAndViewEvent> innerJoin = viewStream.join(clickStream, (view, click) -> {
-                AdClickAndViewEvent adClickAndViewEvent = new AdClickAndViewEvent();
-                adClickAndViewEvent.setClickEvent(click);
-                adClickAndViewEvent.setViewEvent(view);
-                return adClickAndViewEvent;
-
-
-            });
+            KTable<Long, AdClickAndViewEvent> innerJoin = viewStream.join(clickStream, (view, click) ->  new AdClickAndViewEvent(view, click));
             innerJoin.print();
 
 

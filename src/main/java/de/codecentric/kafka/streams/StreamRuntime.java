@@ -39,13 +39,13 @@ public class StreamRuntime {
         viewProps.put("bootstrap.servers", "localhost:9092");
         viewProps.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
         viewProps.put("value.serializer", "de.codecentric.kafka.streams.serde.AdViewEventSerializer");
-        viewProps.put("linger.ms", 100);
+        viewProps.put("linger.ms", 0);
 
         Properties clickProps = new Properties();
         clickProps.put("bootstrap.servers", "localhost:9092");
         clickProps.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
         clickProps.put("value.serializer", "de.codecentric.kafka.streams.serde.AdClickEventSerializer");
-        clickProps.put("linger.ms", 100);
+        clickProps.put("linger.ms", 10000);
 
         viewProducer = new KafkaProducer<Long, AdViewEvent>(viewProps);
         clickProducer = new KafkaProducer<Long, AdClickEvent>(clickProps);
@@ -54,11 +54,11 @@ public class StreamRuntime {
     public void run(TopologyBuilder topologyBuilder) {
         sendEvents();
 
-       /* try {
-            Thread.sleep(5000);
+       try {
+            Thread.sleep(0);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, appId);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -68,6 +68,8 @@ public class StreamRuntime {
         KStreamBuilder builder = new KStreamBuilder();
 
         topologyBuilder.buildTopology(viewTopic,clickTopic, builder);
+
+
 
         new KafkaStreams(builder, config).start();
 
@@ -99,6 +101,12 @@ public class StreamRuntime {
 
         sendView(6, "duplicate click 500 ms and 800 ms after view", 0);
         sendClick(6,  500);
+
+        /*try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         sendClick(6,  800);
     }
 
